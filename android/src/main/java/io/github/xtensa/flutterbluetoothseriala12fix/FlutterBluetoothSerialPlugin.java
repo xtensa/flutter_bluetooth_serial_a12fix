@@ -1,4 +1,4 @@
-package io.github.edufolly.flutterbluetoothserial;
+package io.github.xtensa.flutterbluetoothseriala12fix;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -15,6 +15,8 @@ import android.content.pm.PackageManager;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import android.os.Build;
 
 import android.util.Log;
 import android.util.SparseArray;
@@ -49,7 +51,8 @@ public class FlutterBluetoothSerialPlugin implements FlutterPlugin, ActivityAwar
     private Result pendingResultForActivityResult = null;
 
     // Permissions and request constants
-    private static final int REQUEST_COARSE_LOCATION_PERMISSIONS = 1451;
+    private static final int REQUEST_LOCATION_PERMISSION = 1451;
+    private static final int REQUEST_BLUETOOTH_CONNECT_PERMISSION = 1452;
     private static final int REQUEST_ENABLE_BLUETOOTH = 1337;
     private static final int REQUEST_DISCOVERABLE_BLUETOOTH = 2137;
 
@@ -408,7 +411,8 @@ public class FlutterBluetoothSerialPlugin implements FlutterPlugin, ActivityAwar
         binding.addRequestPermissionsResultListener(
                 (requestCode, permissions, grantResults) -> {
                     switch (requestCode) {
-                        case REQUEST_COARSE_LOCATION_PERMISSIONS:
+                        case REQUEST_BLUETOOTH_CONNECT_PERMISSION:
+                        case REQUEST_LOCATION_PERMISSION:
                             pendingPermissionsEnsureCallbacks.onResult(grantResults[0] == PackageManager.PERMISSION_GRANTED);
                             pendingPermissionsEnsureCallbacks = null;
                             return true;
@@ -444,20 +448,38 @@ public class FlutterBluetoothSerialPlugin implements FlutterPlugin, ActivityAwar
     EnsurePermissionsCallback pendingPermissionsEnsureCallbacks = null;
 
     private void ensurePermissions(EnsurePermissionsCallback callbacks) {
-        if (
-                ContextCompat.checkSelfPermission(activity,
-                        Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED
-                        || ContextCompat.checkSelfPermission(activity,
-                        Manifest.permission.ACCESS_FINE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity,
-                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
-                    REQUEST_COARSE_LOCATION_PERMISSIONS);
+        int currentSDKVersion = Build.VERSION.SDK_INT;
 
-            pendingPermissionsEnsureCallbacks = callbacks;
+        // Android 11 and lower
+        if(currentSDKVersion <= 30) {
+            if (
+                    ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED
+                            || ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
+                            != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_LOCATION_PERMISSION);
+
+                pendingPermissionsEnsureCallbacks = callbacks;
+            } else {
+                callbacks.onResult(true);
+            }
         } else {
-            callbacks.onResult(true);
+            // for Android 12+
+            if (
+                    ContextCompat.checkSelfPermission(activity, Manifest.permission.BLUETOOTH_CONNECT)
+                            != PackageManager.PERMISSION_GRANTED
+                    || ContextCompat.checkSelfPermission(activity, Manifest.permission.BLUETOOTH_SCAN)
+                            != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN}, REQUEST_BLUETOOTH_CONNECT_PERMISSION);
+
+                pendingPermissionsEnsureCallbacks = callbacks;
+            } else {
+                callbacks.onResult(true);
+            }
         }
     }
 
@@ -895,7 +917,7 @@ public class FlutterBluetoothSerialPlugin implements FlutterPlugin, ActivityAwar
                 case "getBondedDevices":
                     ensurePermissions(granted -> {
                         if (!granted) {
-                            result.error("no_permissions", "discovering other devices requires location access permission", null);
+                            result.error("no_permissions", "missing some required permissions", null);
                             return;
                         }
 

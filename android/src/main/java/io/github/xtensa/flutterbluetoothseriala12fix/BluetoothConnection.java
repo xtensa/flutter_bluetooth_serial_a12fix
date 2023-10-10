@@ -1,4 +1,4 @@
-package io.github.edufolly.flutterbluetoothserial;
+package io.github.xtensa.flutterbluetoothseriala12fix;
 
 import java.io.IOException;
 import java.io.InputStream;

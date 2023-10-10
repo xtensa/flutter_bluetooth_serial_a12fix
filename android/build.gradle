@@ -1,4 +1,4 @@
-group 'io.github.edufolly.flutterbluetoothserial'
+group 'io.github.xtensa.flutterbluetoothseriala12fix'
 version '1.0-SNAPSHOT'
 buildscript {
     repositories {
@@ -7,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0'
+        classpath 'com.android.tools.build:gradle:7.4.2' // plugin version
     }
 }
 rootProject.allprojects {
@@ -18,13 +18,14 @@ rootProject.allprojects {
 }
 apply plugin: 'com.android.library'
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
     defaultConfig {
         minSdkVersion 19
+        targetSdkVersion 31
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     lintOptions {

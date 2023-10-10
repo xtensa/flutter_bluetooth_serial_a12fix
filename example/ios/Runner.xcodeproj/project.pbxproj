@@ -382,7 +382,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.github.edufolly.flutterBluetoothSerialExample;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.xtensa.flutterBluetoothSeriala12fixExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -405,7 +405,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.github.edufolly.flutterBluetoothSerialExample;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.xtensa.flutterBluetoothSeriala12fixExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
