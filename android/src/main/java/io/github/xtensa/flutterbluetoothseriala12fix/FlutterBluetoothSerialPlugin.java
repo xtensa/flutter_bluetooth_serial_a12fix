@@ -20,7 +20,7 @@ import android.os.Build;
 
 import android.util.Log;
 import android.util.SparseArray;
-import android.os.AsyncTask;
+//import android.os.AsyncTask;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -30,6 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.net.NetworkInterface;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -533,7 +536,7 @@ public class FlutterBluetoothSerialPlugin implements FlutterPlugin, ActivityAwar
                     self.disconnect();
 
                     // True dispose
-                    AsyncTask.execute(() -> {
+                    Executors.newSingleThreadExecutor().execute(() -> {
                         readChannel.setStreamHandler(null);
                         connections.remove(id);
 
@@ -1024,7 +1027,7 @@ public class FlutterBluetoothSerialPlugin implements FlutterPlugin, ActivityAwar
 
                     Log.d(TAG, "Connecting to " + address + " (id: " + id + ")");
 
-                    AsyncTask.execute(() -> {
+                    Executors.newSingleThreadExecutor().execute(() -> {
                         try {
                             connection.connect(address);
                             activity.runOnUiThread(() -> result.success(id));
@@ -1058,7 +1061,7 @@ public class FlutterBluetoothSerialPlugin implements FlutterPlugin, ActivityAwar
 
                     if (call.hasArgument("string")) {
                         String string = call.argument("string");
-                        AsyncTask.execute(() -> {
+                        Executors.newSingleThreadExecutor().execute(() -> { 
                             try {
                                 connection.write(string.getBytes());
                                 activity.runOnUiThread(() -> result.success(null));
@@ -1068,7 +1071,7 @@ public class FlutterBluetoothSerialPlugin implements FlutterPlugin, ActivityAwar
                         });
                     } else if (call.hasArgument("bytes")) {
                         byte[] bytes = call.argument("bytes");
-                        AsyncTask.execute(() -> {
+                        Executors.newSingleThreadExecutor().execute(() -> {
                             try {
                                 connection.write(bytes);
                                 activity.runOnUiThread(() -> result.success(null));

@@ -2,7 +2,7 @@
 
 [![pub package](https://img.shields.io/pub/v/flutter_bluetooth_serial.svg)](https://pub.dartlang.org/packages/flutter_bluetooth_serial)
 
-Flutter basic implementation for Classical Bluetooth (only RFCOMM for now). This is a fork of original repo (version 4.0.0) that implements fix for Android 12 and up.
+Flutter basic implementation for Classical Bluetooth (only RFCOMM for now). This is a fork of original repo (version 4.0.0) that implements fix for Android 12 and up. It also addresses some deprecated pieces of code to be compatible with newer Android target SDKs.
 
 ## Features
 
