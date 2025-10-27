@@ -40,14 +40,16 @@ class BluetoothConnection {
 
   BluetoothConnection._consumeConnectionID(int? id)
       : this._id = id,
-        this._readChannel = EventChannel('${FlutterBluetoothSerial.namespace}/read/$id') {
+        this._readChannel =
+            EventChannel('${FlutterBluetoothSerial.namespace}/read/$id') {
     _readStreamController = StreamController<Uint8List>();
 
-    _readStreamSubscription = _readChannel.receiveBroadcastStream().cast<Uint8List>().listen(
-          _readStreamController.add,
-          onError: _readStreamController.addError,
-          onDone: this.close,
-        );
+    _readStreamSubscription =
+        _readChannel.receiveBroadcastStream().cast<Uint8List>().listen(
+              _readStreamController.add,
+              onError: _readStreamController.addError,
+              onDone: this.close,
+            );
 
     input = _readStreamController.stream;
     output = _BluetoothStreamSink<Uint8List>(id);
@@ -56,8 +58,9 @@ class BluetoothConnection {
   /// Returns connection to given address.
   static Future<BluetoothConnection> toAddress(String? address) async {
     // Sorry for pseudo-factory, but `factory` keyword disallows `Future`.
-    return BluetoothConnection._consumeConnectionID(
-        await FlutterBluetoothSerial._methodChannel.invokeMethod('connect', {"address": address}));
+    return BluetoothConnection._consumeConnectionID(await FlutterBluetoothSerial
+        ._methodChannel
+        .invokeMethod('connect', {"address": address}));
   }
 
   /// Should be called to make sure the connection is closed and resources are freed (sockets/channels).
@@ -70,7 +73,9 @@ class BluetoothConnection {
     return Future.wait([
       output.close(),
       _readStreamSubscription.cancel(),
-      (!_readStreamController.isClosed) ? _readStreamController.close() : Future.value(/* Empty future */)
+      (!_readStreamController.isClosed)
+          ? _readStreamController.close()
+          : Future.value(/* Empty future */)
     ], eagerError: true);
   }
 
@@ -134,7 +139,8 @@ class _BluetoothStreamSink<Uint8List> extends StreamSink<Uint8List> {
         throw StateError("Not connected!");
       }
 
-      await FlutterBluetoothSerial._methodChannel.invokeMethod('write', {'id': _id, 'bytes': data});
+      await FlutterBluetoothSerial._methodChannel
+          .invokeMethod('write', {'id': _id, 'bytes': data});
     }).catchError((e) {
       this.exception = e;
       close();
@@ -144,7 +150,8 @@ class _BluetoothStreamSink<Uint8List> extends StreamSink<Uint8List> {
   /// Unsupported - this ouput sink cannot pass errors to platfom code.
   @override
   void addError(Object error, [StackTrace? stackTrace]) {
-    throw UnsupportedError("BluetoothConnection output (response) sink cannot receive errors!");
+    throw UnsupportedError(
+        "BluetoothConnection output (response) sink cannot receive errors!");
   }
 
   @override
@@ -194,6 +201,7 @@ class _BluetoothStreamSink<Uint8List> extends StreamSink<Uint8List> {
           throw this.exception;
         }
 
-        this._chainedFutures = Future.value(); // Just in case if Dart VM is retarded
+        this._chainedFutures =
+            Future.value(); // Just in case if Dart VM is retarded
       });
 }

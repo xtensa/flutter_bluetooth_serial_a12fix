@@ -27,6 +27,11 @@ class FlutterBluetoothSerial {
     });
   }
 
+  // RPP: attaches adapter - required for headless mode
+  Future<bool?> attachBluetoothAdapter() async {
+    return await _methodChannel.invokeMethod('attachBluetoothAdapter');
+  }
+
   /* Status */
   /// Checks is the Bluetooth interface avaliable on host device.
   Future<bool?> get isAvailable async =>
